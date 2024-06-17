@@ -1,4 +1,5 @@
 
+RM := rm
 CMAKE := cmake
 MAKE := make
 
@@ -6,7 +7,7 @@ BUILDS := .builds
 CDT_SUB := $(shell pwd)/CDT
 
 .PHONY: all
-all: make_CDT
+all: make_CDT make_voronoi_lines
 
 prepare:
 	@mkdir -p $(BUILDS)
@@ -39,4 +40,4 @@ make_CDT: prepare check_env
 	popd >/dev/null
 
 clean:
-	rm -rf $(BUILDS)
+	@$(RM) -rf $(BUILDS)
