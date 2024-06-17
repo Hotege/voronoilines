@@ -3,15 +3,26 @@ ECHO := echo
 RM := rm
 CMAKE := cmake
 MAKE := make
+CXX := g++
+
+CXXFLAGS := -s -Os -static
 
 BUILDS := .builds
 CDT_SUB := $(shell pwd)/CDT
+VL_OBJ_DIR := $(BUILDS)/voronoilines
+
+OBJS := $(VL_OBJ_DIR)/randomize.o \
+$(VL_OBJ_DIR)/poisson.o
+TESTS := $(VL_OBJ_DIR)/test-poisson.o
+EXES := $(VL_OBJ_DIR)/test-poisson.exe
 
 .PHONY: all
 all: make_CDT make_voronoi_lines
 
 prepare:
 	@mkdir -p $(BUILDS)
+	@mkdir -p $(BUILDS)/CDT
+	@mkdir -p $(BUILDS)/voronoilines
 
 check_CDT:
 	@$(ECHO) "Checking CDT"
@@ -33,14 +44,33 @@ check_env: check_CDT check_CMake
 
 make_CDT: prepare check_env
 	@$(ECHO) "Making CDT"
-	@mkdir -p $(BUILDS)/CDT;
 	@pushd $(BUILDS)/CDT >/dev/null; \
 	$(CMAKE) $(CDT_SUB)/CDT -G "Unix Makefiles" \
 	-DCMAKE_INSTALL_PREFIX=install ; \
 	make install; \
 	popd >/dev/null
 
-make_voronoi_lines:
+make_voronoi_lines: $(OBJS) $(EXES)
+
+$(VL_OBJ_DIR)/test-poisson.exe: $(VL_OBJ_DIR)/test-poisson.o
+	@$(CXX) $(CXXFLAGS) -o $(VL_OBJ_DIR)/test-poisson.exe \
+	$(VL_OBJ_DIR)/test-poisson.o \
+	$(VL_OBJ_DIR)/randomize.o \
+	$(VL_OBJ_DIR)/poisson.o \
+	-lgdiplus -lgdi32
+
+$(VL_OBJ_DIR)/randomize.o: src/randomize.cpp
+	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/randomize.o \
+	src/randomize.cpp
+
+$(VL_OBJ_DIR)/poisson.o: src/poisson.cpp $(VL_OBJ_DIR)/randomize.o
+	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/poisson.o \
+	src/poisson.cpp
+
+$(VL_OBJ_DIR)/test-poisson.o: test/test-poisson.cpp $(VL_OBJ_DIR)/poisson.o
+	@$(CXX) -c $(CXXFLAGS) -D_UNICODE -o $(VL_OBJ_DIR)/test-poisson.o \
+	test/test-poisson.cpp \
+	-lgdiplus -lgdi32
 
 clean:
 	@$(RM) -rf $(BUILDS)
