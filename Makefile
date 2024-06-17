@@ -40,5 +40,7 @@ make_CDT: prepare check_env
 	make install; \
 	popd >/dev/null
 
+make_voronoi_lines:
+
 clean:
 	@$(RM) -rf $(BUILDS)
