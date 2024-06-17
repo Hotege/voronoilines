@@ -24,7 +24,8 @@ check_CDT:
 check_CMake:
 	@echo "Checking CMake"
 	@$(CMAKE) --version >/dev/null 2>&1
-	@echo "- CMake: $$(shell $(CMAKE) --version | awk 'NR==1{print $$3}')"
+	@echo -n "- CMake: "
+	@$(CMAKE) --version | awk 'NR==1{print $$3}'
 
 check_env: check_CDT check_CMake
 
