@@ -68,7 +68,7 @@ $(VL_OBJ_DIR)/poisson.o: src/poisson.cpp $(VL_OBJ_DIR)/randomize.o
 	src/poisson.cpp
 
 $(VL_OBJ_DIR)/test-poisson.o: test/test-poisson.cpp $(VL_OBJ_DIR)/poisson.o
-	@$(CXX) -c $(CXXFLAGS) -D_UNICODE -o $(VL_OBJ_DIR)/test-poisson.o \
+	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/test-poisson.o \
 	test/test-poisson.cpp \
 	-lgdiplus -lgdi32
 

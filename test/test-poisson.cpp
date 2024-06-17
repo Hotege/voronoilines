@@ -1,4 +1,6 @@
 
+#define _UNICODE
+
 #include "../src/randomize.h"
 #include "../src/poisson.h"
 
