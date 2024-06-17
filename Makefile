@@ -1,4 +1,5 @@
 
+ECHO := echo
 RM := rm
 CMAKE := cmake
 MAKE := make
@@ -13,25 +14,25 @@ prepare:
 	@mkdir -p $(BUILDS)
 
 check_CDT:
-	@echo "Checking CDT"
+	@$(ECHO) "Checking CDT"
 	@if [ -d $(CDT_SUB) ]; then \
-		echo "- CDT exists"; \
+		$(ECHO) "- CDT exists"; \
 	else \
-		echo "- CDT does not exist"; \
-		echo "- Please update this submodule"; \
+		$(ECHO) "- CDT does not exist"; \
+		$(ECHO) "- Please update this submodule"; \
 		exit 1; \
 	fi
 
 check_CMake:
-	@echo "Checking CMake"
+	@$(ECHO) "Checking CMake"
 	@$(CMAKE) --version >/dev/null 2>&1
-	@echo -n "- CMake: "
+	@$(ECHO) -n "- CMake: "
 	@$(CMAKE) --version | awk 'NR==1{print $$3}'
 
 check_env: check_CDT check_CMake
 
 make_CDT: prepare check_env
-	@echo "Making CDT"
+	@$(ECHO) "Making CDT"
 	@mkdir -p $(BUILDS)/CDT;
 	@pushd $(BUILDS)/CDT >/dev/null; \
 	$(CMAKE) $(CDT_SUB)/CDT -G "Unix Makefiles" \
