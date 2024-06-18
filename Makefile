@@ -14,7 +14,7 @@ VL_OBJ_DIR := $(BUILDS)/voronoilines
 OBJS := $(VL_OBJ_DIR)/randomize.o \
 $(VL_OBJ_DIR)/poisson.o
 TESTS := $(VL_OBJ_DIR)/test-poisson.o
-EXES := $(VL_OBJ_DIR)/test-poisson.exe
+TESTS_EXE := $(VL_OBJ_DIR)/test-poisson.exe
 
 .PHONY: all
 all: make_CDT make_voronoi_lines
@@ -50,7 +50,7 @@ make_CDT: prepare check_env
 	make install; \
 	popd >/dev/null
 
-make_voronoi_lines: $(OBJS) $(EXES)
+make_voronoi_lines: $(OBJS) $(TESTS_EXE)
 
 $(VL_OBJ_DIR)/test-poisson.exe: $(VL_OBJ_DIR)/test-poisson.o
 	@$(CXX) $(CXXFLAGS) -o $(VL_OBJ_DIR)/test-poisson.exe \
