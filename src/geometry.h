@@ -37,6 +37,8 @@ namespace vl
         bool valid = false;
     };
     using edges = std::vector<edge>;
+    using unique_indices = std::set<size_t>;
+    using uniques = std::vector<unique_indices>;
     class voronoi final
     {
     public:
@@ -54,9 +56,9 @@ namespace vl
         vertices points;
         triangles facets;
         edges borders;
-        std::vector<std::set<size_t>> p2f, p2b;
-        std::vector<std::set<size_t>> b2f, f2b;
-        std::vector<std::set<size_t>> p2n;
+        uniques p2f, p2b;
+        uniques b2f, f2b;
+        uniques p2v;
     };
 
     vertex calc_center(const vertex& p0, const vertex& p1, const vertex& p2);

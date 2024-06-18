@@ -138,7 +138,7 @@ namespace vl
                 borders[i].set_vertical_valid(true);
             }
         }
-        p2n.resize(points.size());
+        p2v.resize(points.size());
         for (size_t i = 0; i < points.size(); i++)
         {
             for (auto& b : p2b[i])
@@ -154,7 +154,7 @@ namespace vl
                         b1 = true;
                     if (b0 && b1)
                         continue;
-                    p2n[i].insert(b);
+                    p2v[i].insert(b);
                 }
             }
         }
