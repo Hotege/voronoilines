@@ -38,17 +38,8 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
     return -1;  // Failure
 }
 
-int main(int argc, char* argv[])
+void _triangulate(const vl::vertices& vertices, const vl::triangles& triangles)
 {
-    vl::randomize(0x19950723);
-    if (argc > 1)
-        vl::randomize(atoi(argv[1]));
-    auto vertices = vl::poisson_distribute(W, H, R);
-    auto triangles = vl::triangulate(vertices, W, H);
-
-    ULONG_PTR token;
-    Gdiplus::GdiplusStartupInput input;
-    Gdiplus::GdiplusStartup(&token, &input, NULL);
     HDC hdc = CreateCompatibleDC(NULL);
     if (hdc)
     {
@@ -76,9 +67,23 @@ int main(int argc, char* argv[])
         }
         CLSID png;
         GetEncoderClsid(_T("image/png"), &png);
-        bitmap.Save(_T("voronoi.png"), &png, NULL);
+        bitmap.Save(_T("triangulate.png"), &png, NULL);
         DeleteObject(hdc);
     }
+}
+
+int main(int argc, char* argv[])
+{
+    vl::randomize(0x19950723);
+    if (argc > 1)
+        vl::randomize(atoi(argv[1]));
+    auto vertices = vl::poisson_distribute(W, H, R);
+    auto triangles = vl::triangulate(vertices, W, H);
+
+    ULONG_PTR token;
+    Gdiplus::GdiplusStartupInput input;
+    Gdiplus::GdiplusStartup(&token, &input, NULL);
+    _triangulate(vertices, triangles);
     Gdiplus::GdiplusShutdown(token);
 
     return 0;
