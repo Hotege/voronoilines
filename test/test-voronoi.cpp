@@ -93,21 +93,15 @@ void _voronoi(const vl::voronoi& voronoi)
         for (size_t i = 0; i < voronoi.get_borders().size(); i++)
         {
             auto& border = voronoi.get_borders()[i];
-            auto& facets = voronoi.b2f[i];
-            auto it = facets.begin();
-            auto f0 = voronoi.get_facets()[*it];
-            auto c0 = vl::calc_center(voronoi.get_points(), f0);
+            if (!border.get_vertical_valid())
+                continue;
+            auto& vertical = border.get_vertical();
+            auto c0 = vertical.first, c1 = vertical.second;
             Gdiplus::REAL x0((Gdiplus::REAL)c0.x), y0((Gdiplus::REAL)c0.y);
-            if (facets.size() == 2)
-            {
-                it++;
-                auto f1 = voronoi.get_facets()[*it];
-                auto c1 = vl::calc_center(voronoi.get_points(), f1);
-                Gdiplus::REAL x1((Gdiplus::REAL)c1.x), y1((Gdiplus::REAL)c1.y);
-                graphics.DrawLine(&pen_line, x0, y0, x1, y1);
-            }
+            Gdiplus::REAL x1((Gdiplus::REAL)c1.x), y1((Gdiplus::REAL)c1.y);
+            graphics.DrawLine(&pen_line, x0, y0, x1, y1);
         }
-        
+
         CLSID png;
         GetEncoderClsid(_T("image/png"), &png);
         bitmap.Save(_T("voronoi.png"), &png, NULL);
@@ -122,7 +116,7 @@ int main(int argc, char* argv[])
         vl::randomize(atoi(argv[1]));
     auto vertices = vl::poisson_distribute(W, H, R);
     auto triangles = vl::triangulate(vertices, W, H);
-    vl::voronoi voronoi(vertices, triangles);
+    vl::voronoi voronoi(vertices, triangles, W, H);
 
     ULONG_PTR token;
     Gdiplus::GdiplusStartupInput input;

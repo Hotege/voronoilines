@@ -1,5 +1,6 @@
 
 #include "geometry.h"
+#include <cmath>
 #include <algorithm>
 
 namespace vl
@@ -24,6 +25,11 @@ namespace vl
         auto p0 = points[t[0]], p1 = points[t[1]], p2 = points[t[2]];
         return calc_center(p0, p1, p2);
     }
+    double distance(const vertex& v0, const vertex& v1)
+    {
+        double dx = v0.x - v1.x, dy = v0.y - v1.y;
+        return sqrt(dx * dx + dy * dy);
+    }
     edge::edge(size_t _b, size_t _e) : b(_b), e(_e)
     {
         if (b > e)
@@ -45,7 +51,24 @@ namespace vl
     {
         return e;
     }
-    voronoi::voronoi(const vertices& _points, const triangles& _facets)
+    const segment& edge::get_vertical() const
+    {
+        return vertical;
+    }
+    const bool& edge::get_vertical_valid() const
+    {
+        return valid;
+    }
+    void edge::set_vertical(const segment& s)
+    {
+        vertical = s;
+    }
+    void edge::set_vertical_valid(bool v)
+    {
+        valid = v;
+    }
+    voronoi::voronoi(const vertices& _points, const triangles& _facets,
+        double w, double h) : width(w), height(h)
     {
         points = _points;
         facets = _facets;
@@ -76,6 +99,65 @@ namespace vl
         for (size_t i = 0; i < f2b.size(); i++)
             for (auto& b : f2b[i])
                 b2f[b].insert(i);
+        for (size_t i = 0; i < borders.size(); i++)
+        {
+            auto fis = b2f[i];
+            auto it = fis.begin();
+            auto f0 = facets[*it];
+            auto c0 = calc_center(points, f0);
+            if (fis.size() == 2)
+            {
+                it++;
+                auto f1 = facets[*it];
+                auto c1 = calc_center(points, f1);
+                borders[i].set_vertical({ c0, c1 });
+                borders[i].set_vertical_valid(true);
+            }
+            else if (fis.size() == 1)
+            {
+                if (c0.x < 0 || c0.x > w || c0.y < 0 || c0.y > h)
+                    continue;
+                auto i0 = borders[i].from(), i1 = borders[i].to();
+                auto p0 = points[i0], p1 = points[i1];
+                auto c = vertex{ (p0.x + p1.x) / 2, (p0.y + p1.y) / 2 };
+                auto surroundings = get_surroundings(c0, c, w, h);
+                if (surroundings.size() == 0)
+                    continue;
+                size_t pos = 0;
+                double d = distance(surroundings[pos], c0);
+                for (size_t j = 1; j < surroundings.size(); j++)
+                {
+                    double _d = distance(surroundings[j], c0);
+                    if (_d < d)
+                    {
+                        pos = j;
+                        d = _d;
+                    }
+                }
+                borders[i].set_vertical({ c0, surroundings[pos] });
+                borders[i].set_vertical_valid(true);
+            }
+        }
+        p2n.resize(points.size());
+        for (size_t i = 0; i < points.size(); i++)
+        {
+            for (auto& b : p2b[i])
+            {
+                if (borders[b].get_vertical_valid())
+                {
+                    auto& s = borders[b].get_vertical();
+                    auto p0 = s.first, p1 = s.second;
+                    bool b0 = false, b1 = false;
+                    if (p0.x < 0 || p0.x > w || p0.y < 0 || p0.y > h)
+                        b0 = true;
+                    if (p1.x < 0 || p1.x > w || p1.y < 0 || p1.y > h)
+                        b1 = true;
+                    if (b0 && b1)
+                        continue;
+                    p2n[i].insert(b);
+                }
+            }
+        }
     }
     const vertices& voronoi::get_points() const
     {
@@ -100,5 +182,26 @@ namespace vl
             it--;
         }
         return (size_t)std::distance(borders.begin(), it);
+    }
+    vertices voronoi::get_surroundings(const vertex& c0, const vertex& c,
+        double w, double h)
+    {
+        vertices res;
+        double dx = c0.x - c.x, dy = c0.y - c.y;
+        if (dx != 0)
+        {
+            vertex L = { 0, (c0.y - c.y) / (c0.x - c.x) * (-c.x) + c.y };
+            vertex R = { w, (c0.y - c.y) / (c0.x - c.x) * (w - c.x) + c.y };
+            res.push_back(L);
+            res.push_back(R);
+        }
+        if (dy != 0)
+        {
+            vertex B = { (c0.x - c.x) / (c0.y - c.y) * (-c.y) + c.x, 0 };
+            vertex T = { (c0.x - c.x) / (c0.y - c.y) * (h - c.y) + c.x, h };
+            res.push_back(B);
+            res.push_back(T);
+        }
+        return res;
     }
 } // namespace vl
