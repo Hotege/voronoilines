@@ -27,10 +27,12 @@ namespace vl
         }
         for (auto& t : cdt.triangles)
         {
-            triangle T;
-            T.vertices[0] = (size_t)t.vertices[0];
-            T.vertices[1] = (size_t)t.vertices[1];
-            T.vertices[2] = (size_t)t.vertices[2];
+            triangle T =
+            {
+                (size_t)t.vertices[0],
+                (size_t)t.vertices[1],
+                (size_t)t.vertices[2],
+            };
             res.push_back(T);
         }
         return res;
