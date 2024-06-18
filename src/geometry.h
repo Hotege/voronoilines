@@ -54,7 +54,6 @@ namespace vl
         vertices points;
         triangles facets;
         edges borders;
-    public:
         std::vector<std::set<size_t>> p2f, p2b;
         std::vector<std::set<size_t>> b2f, f2b;
         std::vector<std::set<size_t>> p2n;
