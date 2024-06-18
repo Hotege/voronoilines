@@ -2,7 +2,7 @@
 #if !defined(_VORONOI_LINES_POISSON_H_)
 #define _VORONOI_LINES_POISSON_H_
 
-#include "vertex.h"
+#include "geometry.h"
 
 namespace vl
 {
