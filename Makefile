@@ -75,19 +75,21 @@ $(VL_OBJ_DIR)/test-voronoi.exe: $(VL_OBJ_DIR)/test-voronoi.o
 	$(VL_OBJ_DIR)/geometry.o \
 	-lgdiplus -lgdi32
 
-$(VL_OBJ_DIR)/geometry.o: src/geometry.cpp
+$(VL_OBJ_DIR)/geometry.o: src/geometry.cpp src/geometry.h
 	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/geometry.o \
 	src/geometry.cpp
 
-$(VL_OBJ_DIR)/randomize.o: src/randomize.cpp
+$(VL_OBJ_DIR)/randomize.o: src/randomize.cpp src/randomize.h
 	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/randomize.o \
 	src/randomize.cpp
 
-$(VL_OBJ_DIR)/poisson.o: src/poisson.cpp $(VL_OBJ_DIR)/randomize.o
+$(VL_OBJ_DIR)/poisson.o: src/poisson.cpp src/poisson.h \
+$(VL_OBJ_DIR)/randomize.o
 	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/poisson.o \
 	src/poisson.cpp
 
-$(VL_OBJ_DIR)/voronoi.o: src/voronoi.cpp $(VL_OBJ_DIR)/geometry.o
+$(VL_OBJ_DIR)/voronoi.o: src/voronoi.cpp src/voronoi.h \
+$(VL_OBJ_DIR)/geometry.o
 	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/voronoi.o \
 	src/voronoi.cpp \
 	-I $(BUILDS)/CDT/install/include
