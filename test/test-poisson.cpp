@@ -9,6 +9,7 @@
 #include <gdiplus.h>
 
 INT W = 640, H = 480;
+double R = 10;
 Gdiplus::REAL radius = 2.5;
 
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
@@ -41,7 +42,7 @@ int main(int argc, char* argv[])
     vl::randomize(0x19950723);
     if (argc > 1)
         vl::randomize(atoi(argv[1]));
-    auto vertices = vl::poisson_distribute(640, 480, 10);
+    auto vertices = vl::poisson_distribute(W, H, R);
 
     ULONG_PTR token;
     Gdiplus::GdiplusStartupInput input;
