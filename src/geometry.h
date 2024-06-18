@@ -19,6 +19,8 @@ namespace vl
         array3 vertices;
     };
     using triangles = std::vector<triangle>;
+
+    vertex calc_center(const vertex& p0, const vertex& p1, const vertex& p2);
 } // namespace vl
 
 #endif

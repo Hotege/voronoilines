@@ -11,12 +11,16 @@ BUILDS := .builds
 CDT_SUB := $(shell pwd)/CDT
 VL_OBJ_DIR := $(BUILDS)/voronoilines
 
-OBJS := $(VL_OBJ_DIR)/randomize.o \
+OBJS := \
+$(VL_OBJ_DIR)/geometry.o \
+$(VL_OBJ_DIR)/randomize.o \
 $(VL_OBJ_DIR)/poisson.o \
 $(VL_OBJ_DIR)/voronoi.o
-TESTS := $(VL_OBJ_DIR)/test-poisson.o \
+TESTS := \
+$(VL_OBJ_DIR)/test-poisson.o \
 $(VL_OBJ_DIR)/test-voronoi.cpp
-TESTS_EXE := $(VL_OBJ_DIR)/test-poisson.exe \
+TESTS_EXE := \
+$(VL_OBJ_DIR)/test-poisson.exe \
 $(VL_OBJ_DIR)/test-voronoi.exe
 
 .PHONY: all
@@ -68,7 +72,12 @@ $(VL_OBJ_DIR)/test-voronoi.exe: $(VL_OBJ_DIR)/test-voronoi.o
 	$(VL_OBJ_DIR)/poisson.o \
 	$(VL_OBJ_DIR)/randomize.o \
 	$(VL_OBJ_DIR)/voronoi.o \
+	$(VL_OBJ_DIR)/geometry.o \
 	-lgdiplus -lgdi32
+
+$(VL_OBJ_DIR)/geometry.o: src/geometry.cpp
+	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/geometry.o \
+	src/geometry.cpp
 
 $(VL_OBJ_DIR)/randomize.o: src/randomize.cpp
 	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/randomize.o \
@@ -78,7 +87,7 @@ $(VL_OBJ_DIR)/poisson.o: src/poisson.cpp $(VL_OBJ_DIR)/randomize.o
 	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/poisson.o \
 	src/poisson.cpp
 
-$(VL_OBJ_DIR)/voronoi.o: src/voronoi.cpp
+$(VL_OBJ_DIR)/voronoi.o: src/voronoi.cpp $(VL_OBJ_DIR)/geometry.o
 	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/voronoi.o \
 	src/voronoi.cpp \
 	-I $(BUILDS)/CDT/install/include
