@@ -15,10 +15,12 @@ OBJS := \
 $(VL_OBJ_DIR)/geometry.o \
 $(VL_OBJ_DIR)/randomize.o \
 $(VL_OBJ_DIR)/poisson.o \
-$(VL_OBJ_DIR)/voronoi.o
+$(VL_OBJ_DIR)/voronoi.o \
+$(VL_OBJ_DIR)/game.o
 TESTS_EXE := \
 $(VL_OBJ_DIR)/test-poisson.exe \
-$(VL_OBJ_DIR)/test-voronoi.exe
+$(VL_OBJ_DIR)/test-voronoi.exe \
+$(VL_OBJ_DIR)/test-game-map.exe
 
 .PHONY: all
 all: make_CDT make_voronoi_lines
@@ -72,6 +74,16 @@ $(VL_OBJ_DIR)/test-voronoi.exe: $(VL_OBJ_DIR)/test-voronoi.o
 	$(VL_OBJ_DIR)/geometry.o \
 	-lgdiplus -lgdi32
 
+$(VL_OBJ_DIR)/test-game-map.exe: $(VL_OBJ_DIR)/test-game-map.o
+	@$(CXX) $(CXXFLAGS) -o $(VL_OBJ_DIR)/test-game-map.exe \
+	$(VL_OBJ_DIR)/test-game-map.o \
+	$(VL_OBJ_DIR)/poisson.o \
+	$(VL_OBJ_DIR)/randomize.o \
+	$(VL_OBJ_DIR)/voronoi.o \
+	$(VL_OBJ_DIR)/geometry.o \
+	$(VL_OBJ_DIR)/game.o \
+	-lgdiplus -lgdi32
+
 $(VL_OBJ_DIR)/geometry.o: src/geometry.cpp src/geometry.h
 	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/geometry.o \
 	src/geometry.cpp
@@ -91,6 +103,11 @@ $(VL_OBJ_DIR)/geometry.o
 	src/voronoi.cpp \
 	-I $(BUILDS)/CDT/install/include
 
+$(VL_OBJ_DIR)/game.o: src/game.cpp src/game.h \
+$(VL_OBJ_DIR)/voronoi.o $(VL_OBJ_DIR)/randomize.o
+	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/game.o \
+	src/game.cpp
+
 $(VL_OBJ_DIR)/test-poisson.o: test/test-poisson.cpp $(VL_OBJ_DIR)/poisson.o
 	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/test-poisson.o \
 	test/test-poisson.cpp \
@@ -100,6 +117,11 @@ $(VL_OBJ_DIR)/test-voronoi.o: test/test-voronoi.cpp \
 $(VL_OBJ_DIR)/poisson.o $(VL_OBJ_DIR)/voronoi.o
 	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/test-voronoi.o \
 	test/test-voronoi.cpp
+
+$(VL_OBJ_DIR)/test-game-map.o: test/test-game-map.cpp \
+$(VL_OBJ_DIR)/poisson.o $(VL_OBJ_DIR)/voronoi.o $(VL_OBJ_DIR)/game.o
+	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/test-game-map.o \
+	test/test-game-map.cpp
 
 clean:
 	@$(RM) -rf $(BUILDS)
