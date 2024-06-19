@@ -16,9 +16,6 @@ $(VL_OBJ_DIR)/geometry.o \
 $(VL_OBJ_DIR)/randomize.o \
 $(VL_OBJ_DIR)/poisson.o \
 $(VL_OBJ_DIR)/voronoi.o
-TESTS := \
-$(VL_OBJ_DIR)/test-poisson.o \
-$(VL_OBJ_DIR)/test-voronoi.cpp
 TESTS_EXE := \
 $(VL_OBJ_DIR)/test-poisson.exe \
 $(VL_OBJ_DIR)/test-voronoi.exe
