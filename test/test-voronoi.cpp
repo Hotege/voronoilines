@@ -1,4 +1,5 @@
 
+#define UNICODE
 #define _UNICODE
 
 #include "../src/randomize.h"
