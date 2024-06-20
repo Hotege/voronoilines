@@ -37,6 +37,9 @@ namespace vl
         game(const init_data& init);
         game(unsigned int s, const init_data& init);
         const map& get_data() const;
+        size_t get_valid_verticals_count() const;
+        size_t get_turn() const;
+        int play(size_t id);
     private:
         void initialize(const init_data& init);
     private:

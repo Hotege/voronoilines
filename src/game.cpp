@@ -59,6 +59,23 @@ namespace vl
     {
         return data;
     }
+    size_t game::get_valid_verticals_count() const
+    {
+        size_t cnt = 0;
+        for (auto& b : data.get_distribution().get_borders())
+            if (b.get_vertical_valid())
+                cnt++;
+        return cnt;
+    }
+    size_t game::get_turn() const
+    {
+        return turn;
+    }
+    int game::play(size_t id)
+    {
+        turn++;
+        return 0;
+    }
     void game::initialize(const init_data& init)
     {
         randomize(seed);
