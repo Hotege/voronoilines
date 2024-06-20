@@ -15,6 +15,7 @@ double R = 60;
 size_t K = 50;
 Gdiplus::REAL radius = 2.5;
 double prec = 1e-7;
+size_t P = 3;
 
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 {
@@ -49,14 +50,12 @@ void draw_center(Gdiplus::Graphics& graphics, const vl::game& g)
     int FH = 8;
     Gdiplus::Font font(Gdiplus::FontFamily::GenericSansSerif(), FH);
     Gdiplus::SolidBrush brush(Gdiplus::Color::DarkGray);
+    Gdiplus::SolidBrush brush2(Gdiplus::Color::Red);
     for (size_t i = 0; i < V.get_points().size(); i++)
     {
         auto& vt = V.get_points()[i];
         int32_t weight = map.get_weights()[i];
         TCHAR str[10] = { 0 };
-        _itot(weight, str, 10);
-        str[0] = str[1] = str[2] = 0;
-        _itot(i, str, 10);
 
         auto bs = V.get_borders_by_point(i);
         std::vector<vl::segment> lines;
@@ -96,10 +95,21 @@ void draw_center(Gdiplus::Graphics& graphics, const vl::game& g)
         Gdiplus::REAL y = (Gdiplus::REAL)center.y;
         Gdiplus::StringFormat format;
         Gdiplus::RectF bounds;
+        Gdiplus::PointF L;
+        
+        str[0] = str[1] = str[2] = 0;
+        _itot(weight, str, 10);
         graphics.MeasureString(str, -1, &font,
             Gdiplus::PointF(0, 0), &format, &bounds);
-        Gdiplus::PointF L(x - bounds.Width / 2, y - bounds.Height / 2);
+        L = Gdiplus::PointF(x - bounds.Width / 2, y - bounds.Height);
         graphics.DrawString(str, -1, &font, L, &brush);
+
+        str[0] = str[1] = str[2] = 0;
+        _itot(i, str, 10);
+        graphics.MeasureString(str, -1, &font,
+            Gdiplus::PointF(0, 0), &format, &bounds);
+        L = Gdiplus::PointF(x - bounds.Width / 2, y);
+        graphics.DrawString(str, -1, &font, L, &brush2);
     }
 }
 
@@ -175,14 +185,26 @@ void dump(const vl::game& g)
 
 int main(int argc, char* argv[])
 {
-    vl::game g(0x19950723, vl::game::init_data{ W, H, R, K });
+    vl::game g(0x19950723, vl::game::init_data{ W, H, R, K, P });
 
     dump(g);
-    size_t total = g.get_valid_verticals_count();
-    while (g.get_turn() < total)
+    while (g.is_subsistent())
     {
-        g.play(-1);
+        auto& map = g.get_data();
+        auto& V = map.get_distribution();
+        for (size_t i = 0; i < V.get_borders().size(); i++)
+        {
+            auto& b = V.get_borders()[i];
+            if (!b.get_vertical_valid() || g.get_borders_flags()[i])
+                continue;
+            g.play(i);
+            break;
+        }
     }
+    auto scores = g.get_scores();
+    printf("scores:\n");
+    for (size_t i = 0; i < scores.size(); i++)
+        printf("  %lld: %lld\n", i, scores[i]);
 
     return 0;
 }

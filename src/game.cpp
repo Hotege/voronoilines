@@ -1,5 +1,6 @@
 
 #include "game.h"
+#include <cstdio>
 #include <ctime>
 #include "randomize.h"
 #include "poisson.h"
@@ -59,6 +60,10 @@ namespace vl
     {
         return data;
     }
+    const std::vector<bool>& game::get_borders_flags() const
+    {
+        return borders_flags;
+    }
     size_t game::get_valid_verticals_count() const
     {
         size_t cnt = 0;
@@ -71,10 +76,69 @@ namespace vl
     {
         return turn;
     }
+    const std::vector<size_t>& game::get_occupation() const
+    {
+        return occupation;
+    }
     int game::play(size_t id)
     {
+        int res = 0;
+        auto& V = data.get_distribution();
+        auto& borders = V.get_borders();
+        auto& b = borders[id];
+        if (!b.get_vertical_valid() || borders_flags[id])
+            return res;
+        borders_flags[id] = true;
+        res |= 1;
+        auto i0 = b.from(), i1 = b.to();
+        auto bs0 = V.get_borders_by_point(i0);
+        auto bs1 = V.get_borders_by_point(i1);
+        bool f0 = true, f1 = true;
+        for (auto& bi : bs0)
+            if (borders[bi].get_vertical_valid() && !borders_flags[bi])
+            {
+                f0 = false;
+                break;
+            }
+        for (auto& bi : bs1)
+            if (borders[bi].get_vertical_valid() && !borders_flags[bi])
+            {
+                f1 = false;
+                break;
+            }
+        if (f0 || f1)
+        {
+            if (f0)
+                occupation[i0] = current;
+            if (f1)
+                occupation[i1] = current;
+            res |= 2;
+        }
+        else
+        {
+            current++;
+            if (current >= profiles.num_players)
+                current = 0;
+        }
         turn++;
-        return 0;
+        return res;
+    }
+    std::vector<size_t> game::get_scores() const
+    {
+        std::vector<size_t> res(profiles.num_players, 0);
+        for (size_t i = 0; i < occupation.size(); i++)
+            if (occupation[i] < profiles.num_players)
+                res[occupation[i]] += data.get_weights()[i];
+        return res;
+    }
+    bool game::is_subsistent() const
+    {
+        auto& V = data.get_distribution();
+        auto& borders = V.get_borders();
+        for (size_t i = 0; i < borders_flags.size(); i++)
+            if (borders[i].get_vertical_valid() && !borders_flags[i])
+                return true;
+        return false;
     }
     void game::initialize(const init_data& init)
     {
