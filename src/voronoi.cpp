@@ -102,6 +102,12 @@ namespace vl
                 borders[i].set_vertical_valid(true);
             }
         }
+        for (auto& b : borders)
+        {
+            auto vertical = b.get_vertical();
+            vertical = validate_segment(vertical, w, h);
+            b.set_vertical(vertical);
+        }
         p2v.resize(points.size());
         for (size_t i = 0; i < points.size(); i++)
         {
