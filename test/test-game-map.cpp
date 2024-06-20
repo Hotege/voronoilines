@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
 
         CLSID png;
         GetEncoderClsid(_T("image/png"), &png);
-        bitmap.Save(_T("game.png"), &png, NULL);
+        bitmap.Save(_T("game-map.png"), &png, NULL);
         DeleteObject(hdc);
     }
     Gdiplus::GdiplusShutdown(token);
