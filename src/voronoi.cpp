@@ -25,6 +25,9 @@ namespace vl
         }
         return res;
     }
+    voronoi::voronoi()
+    {
+    }
     voronoi::voronoi(const vertices& _points, const triangles& _facets,
         double w, double h) : width(w), height(h)
     {
@@ -68,6 +71,9 @@ namespace vl
                 it++;
                 auto f1 = facets[*it];
                 auto c1 = calc_center(points, f1);
+                if ((c0.x < 0 || c0.x > w || c0.y < 0 || c0.y > h) &&
+                    (c1.x < 0 || c1.x > w || c1.y < 0 || c1.y > h))
+                    continue;
                 borders[i].set_vertical({ c0, c1 });
                 borders[i].set_vertical_valid(true);
             }
@@ -129,6 +135,10 @@ namespace vl
     {
         return borders;
     }
+    unique_indices voronoi::get_borders_by_point(size_t id) const
+    {
+        return p2b[id];
+    }
     size_t voronoi::push_border_unique(const edge& e)
     {
         auto it = std::find_if(borders.begin(), borders.end(),
@@ -140,26 +150,5 @@ namespace vl
             it--;
         }
         return (size_t)std::distance(borders.begin(), it);
-    }
-    vertices voronoi::get_surroundings(const vertex& c0, const vertex& c,
-        double w, double h)
-    {
-        vertices res;
-        double dx = c0.x - c.x, dy = c0.y - c.y;
-        if (dx != 0)
-        {
-            vertex L = { 0, (c0.y - c.y) / (c0.x - c.x) * (-c.x) + c.y };
-            vertex R = { w, (c0.y - c.y) / (c0.x - c.x) * (w - c.x) + c.y };
-            res.push_back(L);
-            res.push_back(R);
-        }
-        if (dy != 0)
-        {
-            vertex B = { (c0.x - c.x) / (c0.y - c.y) * (-c.y) + c.x, 0 };
-            vertex T = { (c0.x - c.x) / (c0.y - c.y) * (h - c.y) + c.x, h };
-            res.push_back(B);
-            res.push_back(T);
-        }
-        return res;
     }
 } // namespace vl

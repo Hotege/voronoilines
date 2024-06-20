@@ -1,9 +1,14 @@
 
 #include "game.h"
+#include <ctime>
 #include "randomize.h"
+#include "poisson.h"
 
 namespace vl
 {
+    map::map()
+    {
+    }
     map::map(const voronoi& v) : distribution(v)
     {
         weights.resize(v.get_points().size(), 1);
@@ -41,5 +46,32 @@ namespace vl
             else
                 weights[i] = 9;
         }
+    }
+    game::game(const init_data& init) : seed((unsigned int)time(nullptr))
+    {
+        initialize(init);
+    }
+    game::game(unsigned int s, const init_data& init) : seed(s)
+    {
+        initialize(init);
+    }
+    const map& game::get_data() const
+    {
+        return data;
+    }
+    void game::initialize(const init_data& init)
+    {
+        randomize(seed);
+        profiles = init;
+        auto& W = init.width;
+        auto& H = init.height;
+        auto& R = init.radius;
+        auto& K = init.k;
+        auto vertices = poisson_distribute(W, H, R, K);
+        auto triangles = triangulate(vertices, W, H);
+        data = map(voronoi(vertices, triangles, W, H));
+        auto& distribution = data.get_distribution();
+        borders_flags.resize(distribution.get_borders().size(), false);
+        occupation.resize(distribution.get_points().size(), init.num_players);
     }
 } // namespace vl

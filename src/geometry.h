@@ -38,9 +38,14 @@ namespace vl
     };
     using edges = std::vector<edge>;
 
+    int compare(const vertex& v0, const vertex& v1, double prec = 1e-7);
     vertex calc_center(const vertex& p0, const vertex& p1, const vertex& p2);
     vertex calc_center(const vertices& points, const triangle& t);
     double distance(const vertex& v0, const vertex& v1);
+    int sort(std::vector<vertex>& out, const std::vector<segment>& lines);
+    vertices get_surroundings(const vertex& c0, const vertex& c,
+        double w, double h);
+    segment validate_segment(const segment& src, double w, double h);
 } // namespace vl
 
 #endif
