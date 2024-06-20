@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
     auto vertices = vl::poisson_distribute(W, H, R);
     auto triangles = vl::triangulate(vertices, W, H);
     vl::voronoi voronoi(vertices, triangles, W, H);
-    vl::game::map map(voronoi);
+    vl::map map(voronoi);
     auto& V = map.get_distribution();
 
     ULONG_PTR token;

@@ -8,21 +8,18 @@
 
 namespace vl
 {
-    namespace game
+    class map final
     {
-        class map final
-        {
-        public:
-            map(const voronoi& v);
-            const voronoi& get_distribution() const;
-            const std::vector<int32_t>& get_weights() const;
-        private:
-            void distribute();
-        private:
-            voronoi distribution;
-            std::vector<int32_t> weights;
-        };
-    } // namespace game
+    public:
+        map(const voronoi& v);
+        const voronoi& get_distribution() const;
+        const std::vector<int32_t>& get_weights() const;
+    private:
+        void distribute();
+    private:
+        voronoi distribution;
+        std::vector<int32_t> weights;
+    };
 } // namespace vl
 
 #endif
