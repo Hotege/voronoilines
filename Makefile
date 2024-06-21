@@ -6,6 +6,7 @@ MAKE := make
 CXX := g++
 
 CXXFLAGS := -s -Os -static
+WIN32FLAGS := 
 
 BUILDS := .builds
 CDT_SUB := $(shell pwd)/CDT
@@ -22,6 +23,8 @@ $(VL_OBJ_DIR)/test-poisson.exe \
 $(VL_OBJ_DIR)/test-voronoi.exe \
 $(VL_OBJ_DIR)/test-game-map.exe \
 $(VL_OBJ_DIR)/test-game.exe
+EXES := \
+$(VL_OBJ_DIR)/voronoilines-win32.exe
 
 .PHONY: all
 all: make_CDT make_voronoi_lines
@@ -57,7 +60,12 @@ make_CDT: prepare check_env
 	make install; \
 	popd >/dev/null
 
-make_voronoi_lines: $(OBJS) $(TESTS_EXE)
+make_voronoi_lines: $(OBJS) $(TESTS_EXE) $(EXES)
+
+$(VL_OBJ_DIR)/voronoilines-win32.exe: $(VL_OBJ_DIR)/voronoilines-win32.o
+	@$(CXX) $(CXXFLAGS) $(WIN32FLAGS) -o $(VL_OBJ_DIR)/voronoilines-win32.exe \
+	$(VL_OBJ_DIR)/voronoilines-win32.o \
+	-lgdi32
 
 $(VL_OBJ_DIR)/test-poisson.exe: $(VL_OBJ_DIR)/test-poisson.o
 	@$(CXX) $(CXXFLAGS) -o $(VL_OBJ_DIR)/test-poisson.exe \
@@ -137,6 +145,10 @@ $(VL_OBJ_DIR)/poisson.o $(VL_OBJ_DIR)/voronoi.o $(VL_OBJ_DIR)/game.o
 $(VL_OBJ_DIR)/test-game.o: test/test-game.cpp $(VL_OBJ_DIR)/game.o
 	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/test-game.o \
 	test/test-game.cpp
+
+$(VL_OBJ_DIR)/voronoilines-win32.o: src/main-win32.cpp
+	@$(CXX) -c $(CXXFLAGS) -o $(VL_OBJ_DIR)/voronoilines-win32.o \
+	src/main-win32.cpp
 
 clean:
 	@$(RM) -rf $(BUILDS)
